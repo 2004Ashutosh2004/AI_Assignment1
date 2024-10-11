@@ -1,0 +1,41 @@
+1. Family Riddle
+
+% Family relationships
+father_of(X, Y) :- parent(X, Y), male(X).
+son_of(X, Y) :- parent(Y, X), male(X).
+
+% Solving the riddle: "Brothers and sisters have I none, but that man’s father is my father's son."
+solve_riddle(Man) :-
+    parent(Father, Speaker),        % Speaker's father
+    son_of(Speaker, Father),        % Speaker is the father's son
+    father_of(Speaker, Man).        % Man's father is the speaker
+
+2. River Crossing Problem
+
+% Initial state: [left, left, left, left, boat_left]
+% Man, Woman, Child1, Child2, Boat
+
+% Transition rule for crossing
+cross([M, W, C1, C2, left], [M, W, C1, C2, right], [Who1, Who2]) :-
+    % Checking who crosses the river
+    % Man and woman
+    (Who1 = man, Who2 = woman, TotalWeight is 80 + 80, TotalWeight =< 100);
+    % Man and one child
+    (Who1 = man, Who2 = child1, TotalWeight is 80 + 30, TotalWeight =< 100);
+    (Who1 = man, Who2 = child2, TotalWeight is 80 + 30, TotalWeight =< 100);
+    % Woman and one child
+    (Who1 = woman, Who2 = child1, TotalWeight is 80 + 30, TotalWeight =< 100);
+    (Who1 = woman, Who2 = child2, TotalWeight is 80 + 30, TotalWeight =< 100);
+    % Both children
+    (Who1 = child1, Who2 = child2, TotalWeight is 30 + 30, TotalWeight =< 100).
+
+% River crossing function
+river_cross([left, left, left, left, left], []).
+
+river_cross(State, [Move | Moves]) :-
+    cross(State, NewState, Move),     % Make a move
+    river_cross(NewState, Moves).     % Continue with the new state
+
+% Solve function to initiate the process
+solve(Moves) :-
+    river_cross([left, left, left, left, left], Moves).
